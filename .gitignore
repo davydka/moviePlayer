@@ -1,5 +1,8 @@
 bin/*
 !bin/data/
+bin/data/videos
+!bin/data/videos/.gitkeep
 
 obj/*
 .idea/
+

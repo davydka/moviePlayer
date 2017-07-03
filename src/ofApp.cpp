@@ -1,16 +1,31 @@
 #include "ofApp.h"
 
-bool vidVar;
-
 //--------------------------------------------------------------
 void ofApp::setup(){
 	vidVar = 0;
 
-	flockingMovie.load("movies/flocking.mp4");
-	flockingMovie.setLoopState(OF_LOOP_NORMAL);
+	ofDirectory currentVideoDirectory(ofToDataPath("videos", true));
+	currentVideoDirectory.allowExt("mov");
+	currentVideoDirectory.allowExt("mp4");
+	currentVideoDirectory.allowExt("mkv");
+	currentVideoDirectory.allowExt("avi");
+	if(currentVideoDirectory.exists()){
+		currentVideoDirectory.listDir();
+		vector<ofFile> files = currentVideoDirectory.getFiles();
 
-	fingerMovie.load("movies/moon.mp4");
-	fingerMovie.setLoopState(OF_LOOP_NORMAL);
+		for(int i = 0; i < currentVideoDirectory.size(); i++){
+			ofLogNotice(currentVideoDirectory.getPath(i));
+			ofVideoPlayer* player = new ofVideoPlayer();
+			player->load(currentVideoDirectory.getPath(i));
+			player->setLoopState(OF_LOOP_NORMAL);
+			player->setVolume(0.0);
+			//player->play();
+			//player->setPaused(true);
+			videosHolder[i] = player;
+		}
+	} else {
+		ofLogError() << "currentVideoDirectory: " << currentVideoDirectory.path() << " MISSING";
+	}
 
 	fbo.allocate(320, 240, GL_RGBA);
 
@@ -36,10 +51,12 @@ void ofApp::setup(){
 	panel.add(borderSize);
 	panel.add(radius);
 
-	flockingMovie.play();
-	fingerMovie.play();
+	//flockingMovie.play();
+	//fingerMovie.play();
 
-	currentPlayer = fingerMovie;
+	//currentPlayer = fingerMovie;
+	//currentPlayer.play();
+	videosHolder[vidVar]->play();
 }
 
 
@@ -47,13 +64,8 @@ void ofApp::setup(){
 void ofApp::update(){
 	ofBackground(0);
 
-	flockingMovie.update();
-	fingerMovie.update();
-
-	//update filter
-	//if (fingerMovie.isFrameNew()){
-		pointilize.update();
-	//}
+	videosHolder[vidVar]->update();
+	pointilize.update();
 
 }
 
@@ -61,13 +73,11 @@ void ofApp::update(){
 void ofApp::draw(){
 	fbo.begin();
 	ofClear(0);
-	currentPlayer.draw(0, 0, 320, 240);
+	videosHolder[vidVar]->draw(0, 0, 320, 240);
 	fbo.end();
 
-	//draw filter
 	pointilize.draw(0,0);
 
-	//draw gui
 	panel.draw();
 }
 
@@ -93,11 +103,12 @@ void ofApp::onRadiusChanged(float& t){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-	vidVar = !vidVar;
-	
-	if(vidVar){
-		currentPlayer = flockingMovie;
-	} else {
-		currentPlayer = fingerMovie;
-	}
+	//std::cout<<vidVar<<std::endl;
+
+	videosHolder[vidVar]->setPaused(true);
+	vidVar++;
+	if(vidVar > videosHolder.size()-1)
+		vidVar = 0;
+
+	videosHolder[vidVar]->play();
 }
