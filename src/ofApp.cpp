@@ -1,8 +1,17 @@
 #include "ofApp.h"
 
+int _w = 32;
+int _h = 32;
+
+float _elapsedTime;
+float _alarm;
+
 //--------------------------------------------------------------
 void ofApp::setup(){
-	vidVar = 0;
+	vidVar = 4;
+	ofSetWindowShape(_w, _h);
+	ofSetWindowPosition(0, 0);
+	ofSetFrameRate(60);
 
 	ofDirectory currentVideoDirectory(ofToDataPath("videos", true));
 	currentVideoDirectory.allowExt("mov");
@@ -27,45 +36,34 @@ void ofApp::setup(){
 		ofLogError() << "currentVideoDirectory: " << currentVideoDirectory.path() << " MISSING";
 	}
 
-	fbo.allocate(320, 240, GL_RGBA);
-
-	//init ornament
-	pointilize.setup(1024,768);
-
-	//assign video input to ornament
-	pointilize.loadTexture(fbo.getTexture());
-
-	//setup gui
-	renderType.set("renderType", 0, 0, 1);
-	renderType.addListener(this, &ofApp::onRenderTypeChanged);
-	dynamicSize.set("dynamic Size", 0, 0, 2);
-	dynamicSize.addListener(this, &ofApp::onDynamicSizeChanged);
-	borderSize.set("border size", 0, 0, 1.0);
-	borderSize.addListener(this, &ofApp::onBorderSizeChanged);
-	radius.set("radius", 0, 0, 1.0);
-	radius.addListener(this, &ofApp::onRadiusChanged);
-
-	panel.setup();
-	panel.add(renderType);
-	panel.add(dynamicSize);
-	panel.add(borderSize);
-	panel.add(radius);
-
-	//flockingMovie.play();
-	//fingerMovie.play();
-
-	//currentPlayer = fingerMovie;
-	//currentPlayer.play();
+	fbo.allocate(_w, _h, GL_RGBA);
 	videosHolder[vidVar]->play();
-}
 
+	_elapsedTime = ofGetElapsedTimef();
+	_alarm = _elapsedTime + 5.;
+}
 
 //--------------------------------------------------------------
 void ofApp::update(){
 	ofBackground(0);
 
-	videosHolder[vidVar]->update();
-	pointilize.update();
+	_elapsedTime = ofGetElapsedTimef();
+	if(_elapsedTime > _alarm){
+		_alarm = _elapsedTime + 5.;
+
+		videosHolder[vidVar]->setPaused(true);
+		vidVar++;
+		if(vidVar > videosHolder.size()-1)
+			vidVar = 0;
+
+		videosHolder[vidVar]->play();
+	}
+	
+
+	//if(videosHolder[vidVar]->isFrameNew()){
+		videosHolder[vidVar]->update();
+	//}
+
 
 }
 
@@ -73,32 +71,10 @@ void ofApp::update(){
 void ofApp::draw(){
 	fbo.begin();
 	ofClear(0);
-	videosHolder[vidVar]->draw(0, 0, 320, 240);
+	videosHolder[vidVar]->draw(0, 0, _w, _h);
 	fbo.end();
 
-	pointilize.draw(0,0);
-
-	panel.draw();
-}
-
-void ofApp::onRenderTypeChanged(int& t){
-	pointilize.setRenderType(t);
-}
-
-void ofApp::onDynamicSizeChanged(int& t){
-	pointilize.setDynamicSizeMode(t);
-}
-
-void ofApp::onScaleModeChanged(int& t){
-	pointilize.setScaleMode(t);
-}
-
-void ofApp::onBorderSizeChanged(float& t){
-	pointilize.setBorderSize(t);
-}
-
-void ofApp::onRadiusChanged(float& t){
-	pointilize.setRadius(t);
+	fbo.draw(0,0);
 }
 
 //--------------------------------------------------------------
