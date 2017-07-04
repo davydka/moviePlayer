@@ -72,7 +72,7 @@ void ofApp::update(){
 
 	_elapsedTime = ofGetElapsedTimef();
 	if(_elapsedTime > _alarm){
-		_alarm = _elapsedTime + 60.;
+		_alarm = _elapsedTime + 5.;
 
 		videosHolder[vidVar]->setPaused(true);
 		vidVar++;
