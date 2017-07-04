@@ -48,10 +48,11 @@ void ofApp::setup(){
 			ofVideoPlayer* player = new ofVideoPlayer();
 			player->setPixelFormat(OF_PIXELS_NATIVE);
 			player->load(currentVideoDirectory.getPath(i));
-			player->setLoopState(OF_LOOP_NORMAL);
+			//player->setLoopState(OF_LOOP_NORMAL);
 			player->setVolume(0.0);
 			player->play();
 			player->setPaused(true);
+			player->setPosition(0.0);
 			videosHolder[i] = player;
 		}
 	} else {
@@ -81,7 +82,7 @@ void ofApp::update(){
 
 		videosHolder[vidVar]->setPosition(0.0);
 		videosHolder[vidVar]->setPaused(false);
-		videosHolder[vidVar]->setLoopState(OF_LOOP_NORMAL);
+		//videosHolder[vidVar]->setLoopState(OF_LOOP_NORMAL);
 		std::cout<<videosHolder[vidVar]->getMoviePath()<<std::endl;
 		std::cout<<videosHolder[vidVar]->isPlaying()<<std::endl;
 		std::cout<<videosHolder[vidVar]->isPaused()<<std::endl;
