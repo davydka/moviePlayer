@@ -1,7 +1,12 @@
+.DS_Store
 bin/*
 !bin/data/
 bin/data/videos/*
 !bin/data/videos/.gitkeep
+bin/data/gifs/*
+!bin/data/gifs/.gitkeep
+bin/data/videosSmall/*
+!bin/data/videosSmall/.gitkeep
 
 obj/*
 .idea/

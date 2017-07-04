@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxGui.h"
+//#include "ofxGif.h"
 
 class ofApp : public ofBaseApp{
     
@@ -25,6 +26,7 @@ public:
 	int vidVar;
 	map<int, ofVideoPlayer*> videosHolder;
 
+	//map<int, ofxGIF::fiGifLoader*> gifloader;
 
 };
 
